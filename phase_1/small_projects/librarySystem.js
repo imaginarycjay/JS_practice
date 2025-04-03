@@ -1,13 +1,13 @@
-// ✅ Factory Function for Book
-function createBook(title, author) {
+const input = require("prompt-sync")();
+
+function createBook() {
   return {
-    title,
-    author,
-    status: "Available" // Default status
+    title: String(input("Enter title: ")),
+    author: String(input("Enter author: ")),
+    status: "Available", // Default status
   };
 }
 
-// ✅ Library Object to Manage Books
 const Library = {
   books: [],
 
@@ -17,13 +17,22 @@ const Library = {
   },
 
   displayBooks() {
-    this.books.forEach((book, index) => {
-      console.log(`${index + 1}. Title: ${book.title}, Author: ${book.author}, Status: ${book.status}`);
-    });
+    if (this.books.length === 0) {
+      console.log(`There are no books here yet.`);
+    } else {
+      this.books.forEach((book, index) => {
+        console.log(
+          `${index + 1}. Title: ${book.title}, Author: ${
+            book.author
+          }, Status: ${book.status}`
+        );
+      });
+    }
   },
 
-  borrowBook(title) {
-    const book = this.books.find(b => b.title === title);
+  borrowBook() {
+    const title = input("Enter title: ");
+    const book = this.books.find((b) => b.title === title);
     if (book) {
       if (book.status === "Available") {
         book.status = "Borrowed";
@@ -34,15 +43,52 @@ const Library = {
     } else {
       console.log(`Book not found: ${title}`);
     }
-  }
+  },
+
+  returnBook() {
+    const title = input("Book to return: ");
+    const book = this.books.find((b) => b.title === title);
+    if (book) {
+      if (book.status === "Borrowed") {
+        book.status = "Available";
+        console.log(`You return ${book.title}`);
+      } else {
+        console.log(`Book: ${book.title} is already available.`);
+      }
+    } else {
+      console.log(`Book not found: ${title}`);
+    }
+  },
 };
 
-// ✅ Example Usage
-Library.addBook(createBook("Programming 101", "Cjay"));
-Library.addBook(createBook("How to Kill Efficiently", "Mary"));
-Library.addBook(createBook("How to Get Passing Grade", "Pajes"));
+console.log(
+  `Welcome to Library System \n[1] = addBook \n[2] = borrow book \n[3] = return book \n[4] = display book \n[5] = quit`
+);
 
-Library.displayBooks();
-Library.borrowBook("Programming 101");
-Library.borrowBook("Programming 101");
-Library.displayBooks();
+while (true) {
+  console.log();
+  const UserChoice = Number(input("Menu: "));
+  if (isNaN(UserChoice)) {
+    console.log("invalid bai");
+    return;
+  }
+  if (UserChoice === 5) {
+    console.log("You logged out");
+    return;
+  }
+
+  switch (UserChoice) {
+    case 1:
+      Library.addBook(createBook());
+      break;
+    case 2:
+      Library.borrowBook();
+      break;
+    case 3:
+      Library.returnBook();
+      break;
+    case 4:
+      Library.displayBooks();
+      break;
+  }
+}
